@@ -1,0 +1,25 @@
+#!/usr/bin/julia
+println("Loading packages, please be patient...")
+using DataFrames
+
+include("../src/utils/anonymize_dataframe.jl")
+
+if length(ARGS) != 3
+  println("usage: julia anonymizecsv input.csv output.csv yearshift")
+  exit(-1)
+end
+
+const InFile = ARGS[1]
+const OutFile = ARGS[2]
+const YearShift = int(ARGS[3])
+
+println("Reading file: $InFile")
+df = readtable(InFile)
+
+println("Num rows: $(size(df, 1))")
+
+println("Anonymizing...")
+anondf, anonmap = anonymize(df, ["FAIL", "PASS", "SKIP", "N/A"], YearShift)
+
+println("Writing to file: $OutFile")
+writetable(OutFile, anondf)
